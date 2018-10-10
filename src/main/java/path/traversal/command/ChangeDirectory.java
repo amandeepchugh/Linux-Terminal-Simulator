@@ -1,8 +1,10 @@
-package path.traversal.commands;
+package path.traversal.command;
+
+import javax.xml.bind.ValidationException;
 
 import javassist.NotFoundException;
 import path.traversal.directory.Directory;
-import path.traversal.directory.DirectoryFactory;
+import path.traversal.directory.DirectoryUtils;
 
 public class ChangeDirectory implements Command {
 
@@ -11,7 +13,7 @@ public class ChangeDirectory implements Command {
 	private Directory workingDirectory;
 
 	public void run(String input) throws NotFoundException  {
-		
+
 		String[] arguments = input.split(" ");
 
 		if (arguments.length != 2) {
@@ -19,68 +21,47 @@ public class ChangeDirectory implements Command {
 		}
 
 		String directoryPathToChange = arguments[1];
-		validatePath(directoryPathToChange);
 
-		Directory parentDirectory;
-		Directory changedDirectory;
-		if (isPathAbsolute(directoryPathToChange)) {
+		
+		Directory parentDirectory = DirectoryUtils.getParentDirectory(directoryPathToChange, workingDirectory);
 
-			Directory transitDirectory = workingDirectory;
-			while ( ! transitDirectory.getParent().equals(transitDirectory) ) {
-				transitDirectory = transitDirectory.getParent();
-			}
-			parentDirectory = transitDirectory;
-			
-
-		} else {
-
-			parentDirectory = workingDirectory;
-
-		}
 		String output;
+		Directory changedDirectory;
 		try {
-			
+
 			changedDirectory  = changeDirectory(directoryPathToChange, parentDirectory);
 			setWorkingDirectory(changedDirectory);
 			output = CommandConstants.SUCCESS_PREFIX + ": " + directoryPathToChange + " " + "changed";
 			System.out.println(output);
-			
-		} catch (NotFoundException e) {
-			
-			output = CommandConstants.ERROR_PREFIX + ": " + directoryPathToChange + " " + "directory not found";
+
+		} catch (NotFoundException | ValidationException e) {
+	
+			output = CommandConstants.ERROR_PREFIX + ": " + e.getMessage();
 			System.err.println(output);
-			
+
 		}
 
 	}
 
-	private void validatePath(String directoryPathToCreate) {
-
-		//TODO: later, path validation
-		//TODO: move to directoryUtils
-
-	}
-
-	private Directory changeDirectory(String directoryPathToChange, Directory parentDirectory) throws NotFoundException {
-		//TODO
+	private Directory changeDirectory(String directoryPathToChange, Directory parentDirectory) throws NotFoundException, ValidationException {
+		//TODO: the method design/names needs to be better.
+		if (directoryPathToChange.equals("/")) {
+			return parentDirectory;
+		}
+		
 		if (directoryPathToChange.charAt(0) == '/') {
 			directoryPathToChange = directoryPathToChange.substring(1);
 		}
-		String[] directoryNamesInPath = directoryPathToChange.split("/");
+		String[] directoryNamesInPath = directoryPathToChange.split("/");		
+		DirectoryUtils.validateDirectoryNames(directoryNamesInPath);
 
 		Directory transitDirectory = parentDirectory;
 		for (String directoryName : directoryNamesInPath) {
-				transitDirectory = transitDirectory.getSubDirectory(directoryName);
-				continue;
-			 
+			transitDirectory = transitDirectory.getSubDirectory(directoryName);
+			continue;
+
 		}
 		return transitDirectory; 
-	}
-
-	private boolean isPathAbsolute(String string) {
-		// TODO Auto-generated method stub
-		//TODO: move to directoryUtils
-		return true;
 	}
 
 	public String getCommandName() {

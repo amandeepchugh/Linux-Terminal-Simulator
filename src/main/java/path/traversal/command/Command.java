@@ -1,4 +1,4 @@
-package path.traversal.commands;
+package path.traversal.command;
 
 import javassist.NotFoundException;
 import path.traversal.directory.Directory;

@@ -11,9 +11,9 @@ public class DirectoryFactory {
 		Directory freshRootDirectory = new Directory();
 		freshRootDirectory.setRoot(true);
 		freshRootDirectory.setPath(DirectoryConstants.ROOT_PATH);
-		freshRootDirectory.setName("/");// TODO: will need to revisit again for the name
+		freshRootDirectory.setName("");// TODO: might need to revisit again for the name
 
-		addParentSoftLink(freshRootDirectory);
+		addParentSoftLink(freshRootDirectory, freshRootDirectory);
 
 		return freshRootDirectory;
 
@@ -28,17 +28,17 @@ public class DirectoryFactory {
 		} else {
 			directory.setPath(parentDirectory.getPath() + "/" + directoryName);
 		}
-		addParentSoftLink(directory);
+		addParentSoftLink(directory, parentDirectory);
 		
 		return directory;
 		
 	}
 
-	private static void addParentSoftLink(Directory directory) {
+	private static void addParentSoftLink(Directory directory, Directory parentDirectory) {
 
 		SoftLink parent = new SoftLink();
 		parent.setName(DirectoryConstants.SOFT_LINK_PARENT_NAME);
-		parent.setDirectoryReference(directory);
+		parent.setDirectoryReference(parentDirectory);
 		directory.addSoftLink(parent);
 
 	}

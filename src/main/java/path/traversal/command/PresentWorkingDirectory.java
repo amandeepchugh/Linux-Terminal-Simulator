@@ -1,17 +1,15 @@
-package path.traversal.commands;
+package path.traversal.command;
 
 import path.traversal.directory.Directory;
 
-public class ListCommand implements Command {
+public class PresentWorkingDirectory implements Command {
 
-	public static final String COMMAND_NAME = "ls";
+	public static final String COMMAND_NAME = "pwd";
 	private Directory workingDirectory;
 	
 	public void run(String input) {
 		
-		for (Directory directories : workingDirectory.getSubDirectories()) {
-			System.out.println(directories.getName());
-		}
+		System.out.println(workingDirectory.getPath());
 		
 	}
 

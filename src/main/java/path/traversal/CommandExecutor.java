@@ -7,8 +7,8 @@ import java.util.Set;
 import org.reflections.Reflections;
 
 import javassist.NotFoundException;
-import path.traversal.commands.Command;
-import path.traversal.commands.CommandConstants;
+import path.traversal.command.Command;
+import path.traversal.command.CommandConstants;
 import path.traversal.directory.Directory;
 
 public class CommandExecutor {
